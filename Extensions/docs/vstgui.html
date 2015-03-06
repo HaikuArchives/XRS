@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<Html>
+
+<HEAD>
+	<title> home.cell - Information - Porting VST PlugIns to BeOS</title>
+	<meta name="Author" content="Christopher Lenz">
+	<meta name="Keywords" content="BeOS, MediaKit">
+	<meta name="Description" content="">
+</head>
+
+<body bgcolor="#CCCCCC">
+	<! BEGIN "Header">
+	<br>
+	<table border=2 width="100%" cellspacing=0 cellpadding=5 bgcolor="#999999">
+		<tr>
+			<td align="LEFT" valign="CENTER">
+				<img src="../icon.gif" width=30 height=30 border=0 align="MIDDLE" hspace=10>
+				<b><a href="../index.html">home.cell</a> - <a href="../info.html">Information</a> - Porting VST PlugIns To BeOS</B>
+			</td>
+		</tr>
+	</table>
+<! BEGIN "Intro" SECTION>
+	<p>
+		If your VST PlugIn uses the cross-platform VSTGUI library by Steinberg, you'll have to do a bit of additional work. Note though that the steps described on the previous page still apply, so I assume you're through with that stuff.
+	</p>
+
+<! BEGIN "Add VSTGUI Resources" SECTION>
+	<p><br><hr><br><font size=+1>
+		<b>Add VST Resources</B><br><br>
+	</font></p>
+
+	<p>
+		If you're using the VSTGUI, you'll have a couple of image files that need to be included with the project. The obvious way to do this is by putting them in a resource file and adding that into the project. On BeOS you have two command line utilities to put data into resource files: <b>mwbres</B> and <b>xres</B>. I will be using xres here, because I think it's a bit simpler to use.<br>
+	</p>
+
+	<p>
+		The first thing to consider is the file format of your images. On BeOS you're not limited to use uncompressed bitmap files for resources, you can also use e.g. JPEG files which will reduce the binary size of your plugin quite considerably. So if you have images that can handle a bit of compression loss (maybe because they're 'blurry' anyway), you might want to experiment with this option.
+	</p>
+
+	<p>
+		Next you'll need the mapping between files and resources IDs. Depending on your original development environment, you may find these in different places. Look out for files like <b>resources.h</B> or <b>*.rc</B>.
+	</p>
+
+	<p>
+		Now I recommend creating a short shell script to make the resource creation process persistent. This is an example for such a script:
+		<blockquote><pre>
+# add_images.sh
+# adds image files to resources
+
+xres -o MyPlugIn.rsrc \
+-a RAWT:128:Background background.jpg \
+-a RAWT:129:MyKnob my_knob.bmp \
+-a RAWT:130:MyFader my_fader.bmp \
+-a RAWT:131:MyFaderHandle my_fader_handle.bmp
+		</Blockquote></pre>
+		Here you can see that the utility <b>xres</B> is launched with a long list of arguments. The first argument (right after -o) is the name of the resource file you want to create. The next lines each add an image file to the resources. Here 'RAWT' is for 'Raw Type' which is always the type of choice for images. After that is the resource ID (which you should have found out before), optionally followed by a name. After that comes the images file name. You'll have to add such a line for every image you want to include. The backslashes above are important because they make the shell ignore the line breaks.
+	</p>
+	<p>
+		Store the above script (altered to fit your plugin) in a text file called 'add_images.sh'. Then launch the Terminal application from the Be menu, navigate into the directory where you stored the script and execute it by typing in its full name (case sensitive !). The requested resource file (MyPlugIn.rsrc in the example above) will be created in the same directory, and you'll have to add it to the project (by dragging it into the BeIDE project window).
+	</p>
+	<p>
+		One more thing is left: You'll have to add the <b>libvstgui.o</B> file to the project. Nothing special to do there!
+	</p>
+	<p>
+		Now, if you recompile and link the project, you shouldn't be getting linker errors anymore, and the resources should've been added to the plugin binary.<br>
+		Good Luck !
+	</p>
+	<p><hr>
+	<font size=-1><i>
+		VST is a trademark of Steinberg Soft- und Hardware GmbH
+	</i></font></p>
+
+</BODY>
+
+</HTML>

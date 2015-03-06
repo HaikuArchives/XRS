@@ -1,0 +1,113 @@
+15/Oct/2001
+	xrstype.so non esiste più e' stata ri-inglobato nell'eseguibile
+	in questo modo tutti i plug-in devono essere compilati , linkando con
+	l'applicazione. (_APP_)
+
+16/Oct/2001
+
+	*agginto il semaforo 'stresaforo' in Juice.cpp in teoria, il passaggio
+	tra i vari VST dovrebbe essere INDOLORE. {da testare adeguatamente}
+
+	*il fuoco della finestra lo si prende anche se si clicckka sulle View
+	  'vuote'
+
+25/Oct/2001
+
+	*a questo punto in XRS_host non c'e' più  ExternalManager.
+	BankManager rimane perche' da usare in JFileManager per 
+	il caricamento di vecchi file.
+	In generale < sconsigliato l'uso dei BANKY!
+	
+	*semplificata notevolmente TracksPanel.cpp. che non ha neanche piu'
+	selTrack ne curJTrack. Il piu' e stato spostato in TrackManager.
+ 
+31/Dic/2001
+	* anche quest'anno se ne andato. pieno e vuoto delle solite cose.
+	cmq, xrs1.2 sembra serio questa volta..
+	inserito nuovo 'stack' per gli effetti VST. aggiunta linea global e possibilità di inverire piu' di un effetto per linea. sti cazzi come suona bene..
+	Aggiunto il SamplerPanel -- ne quale inserita strecther in note (che bello!)
+	e e' stato spostato qui il Reverse (in conformità con gli standard fruity :)
+
+10/Gen/2002
+
+	*ed < partito quello nuovo, pieno e vuoto delle solite cose..
+	* aggiunto PianoView!
+
+24/Gennaio/2002
+	* aggiunto VIW per supporto dei VST Instruments
+
+1/Febbraio/2002
+	* e' gia da qualche giorno che e' uscita la versione Alpha (non ufficiale)
+	 molti bacarozzi sono stati estirpati (anche un trashissimo buffer overflow..)
+	.importante: sistemata interfaccia JTrack e sue derivati nelle Extensions..
+	.. aggiunta funzione in WU_AppUtils : GetAppJpeg.. per caricare i files nelle resource 
+	anche in fomato compresso.
+
+6/Febbrazio/2002
+	* Note view più grande (il doppio)
+	* note_view adesso supporta il trascinamento.
+	* il tasto 'a' attiva il PlayAll.
+	* Autospostamento del piano view quando si preme il tasto destro.
+	* MediaBrowser adesso puo usare rotelle del mouse per spostarsi
+	* Fixed bugs for VST Audio Output Window (MyList Bug);
+8/feb
+	*Fixed a bag.. when changing the name of a track the MainWindow 
+		prendeva ancora gli eventi dalla tastiera..
+
+-------- xrs1.2Alpha3 out-------
+
+11/feb
+	~ aggiunto il Meter nel Tn306.. si lascia?? (forse e' più fico se lo metto
+		solo al JX10 .. o al sampler??)
+	* aggiunto tastino (sgrauso) per attivare un VST nella lista degli FX Lines.
+14/Feb/2002
+	* Fixed a bug for TickView : se le note sono < 16 si adegua giustamente..
+	* Load/Save -- Active PlugIn Propertie
+	~ fixed a bug for loading vsts on global line..
+	* fixed a bug for the PluWindow with ScrollBsr option. (for JX10)
+	* fixed a bug in XNotesView per la lo show del pianoView 
+		(il reset DEVE essere fatto sempre DOPO lo SHOW!)
+	* fixed : gr.phical stuff for Dano5.1 (per SampleView);
+	* in Tn306 : eliminata la classe TbWindow al suo posto e' stata
+		usata la magica PlugWindow..
+		cio' mi permette di
+		1) avere i preset ( che attualmente non ci sono)
+		2) salvare/richiamare la poszione della finestra in modo 'automatico'
+	* Right mouse su Nome Traccia del Tn306 per vedere/nascondere il pannellino
+15/Feb
+	* Aggiunta la possibilità di cambiare il nome delle mesure (in MatrixWindow)
+	    (non viene ancora salvata..)
+	* Meter per il Tn306 stereo. e i meter si resettano allo stop song
+	* Possibilità di aprire e chiudere il Pannellino dei SamplerTracjView (right mouse on the track name)
+
+16/feb/
+	~cambio di e-mail a 'oxygenum@tiscali.it'
+	* Aggiunto nel pannello di conf della song la possibilità
+	  di modificare qundo for apparire la nota rossa..
+	 SOLO grafica.. il resto non va.. :)(
+
+17/feb/2002
+	* sistemato il goOff di VIW e il  goOn() di Sampler.
+	* I folder di MediaBrowser (anche per i bank) non sono piu' draggabili
+19/Feb/2002
+	* Aggiunta optione Boost sul Sampler per avere un 1x,2x,3x,4x di volume.
+	 VIENE  SALVATO!
+	* Fixed: aggiungere una traccia con la tastiera ne aggiungeva 2!!!
+20/Feb/2002
+	* New Tn306 panel. (KOOOL!)
+21/Feb/2002
+	* Bug Fix: salva posizione del TnPanel e big e hidden. (sporca grossa!)
+25/Feb/2002
+	* Bux fix: il messagggio di Juice per le lucine,
+		viene creato una sola volta, poi si usa il replaceInt() d BMessage!
+	= Adden : prima versione grezza di StereoMeter.
+12/Mar/2002
+	* new sistem in the Sequence class : up to 999 bars {puo' essere aumentato, modificando maxcount.h}
+16/Mar/2002
+	* fixed a bug of MBrowser (double click su folder_name) 
+
+26/Mar/2002 -- 
+		Unload degli Addon aggiunto.
+
+27/Mar/2002 - 
+		Sampler pitchable aggiunto

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<Html>
+
+<HEAD>
+	<title> home.cell - Information - Porting VST PlugIns to BeOS</title>
+	<meta name="Author" content="Christopher Lenz">
+	<meta name="Keywords" content="BeOS, MediaKit">
+	<meta name="Description" content="">
+</head>
+
+<body bgcolor="#CCCCCC">
+	<! BEGIN "Header">
+	<br>
+	<table border=2 width="100%" cellspacing=0 cellpadding=5 bgcolor="#999999">
+		<tr>
+			<td align="LEFT" valign="CENTER">
+				<img src="../icon.gif" width=30 height=30 border=0 align="MIDDLE" hspace=10>
+				<b><a href="../index.html">home.cell</a> - <a href="../info.html">Information</a> - Porting VST PlugIns To BeOS</B>
+			</td>
+		</tr>
+	</table>
+<! BEGIN "Intro" SECTION>
+	<p>
+		With VST 2.0 the BeOS (x86 only) has become one of the supported platforms of Steinbergs VST standard (the others are Windows, MacOS and SGI/MOTIF). This includes full UI support if you're using the cross-platform VSTGUI library. In fact you can code one version of the plugin and recompile it on all platforms without much hassle. But also VST 1.0 plugins can be easily ported with one little modification, as long as you're not using custom, platform-dependant UI code.
+	</P>
+	<P>
+		On this page I'll give you detailled instructions on how to port your plugs. So if you're new to BeOS, but have it installed somewhere near you and are willing to port, this is for you. If you need help or don't have access to a BeOS machine, feel free to contact me at <a href="mailto:cmlenz@gmx.de">cmlenz@gmx.de</a>.
+	</P>
+
+<! BEGIN "Contents" SECTION>
+	<p>
+	<b>Contents:</B><br><br>
+	<ul>
+		<li><a href="#install_sdk">Install the SDK Files</a>
+		<li><a href="#create_project">Create a BeIDE Project</a>
+		<li><a href="#import_code">Import the PlugIn Source Code</a>
+		<li><a href="vstgui.html">Add VSTGUI Resources</a>
+	</ul>
+	</p>
+
+<! BEGIN "Install the SDK Files" SECTION>
+	<p><br><hr><br><font size=+1>
+		<a name="install_sdk"></a><b>Install the SDK Files</B><br><br>
+	</font></p>
+	<p>
+		First of all, if you don't have the BeOS specific files of the VST2 SDK (i.e. the folder 'beos'), you must first download the BeOS version of the SDK from the Steinberg site. Otherwise you'll probably have the files on a floppy or another partition of the same machine. In BeOS you can easily access both by 'mounting' them: right-click the Desktop to bring up its context-menu, select 'Mount' and choose the partition you want to access, or 'floppy' if the files are there. The icon of that disk will appear on the Desktop, simply double-click to browse its contents.
+	<p>	
+		Then you'll have to put the files into a appropriate place on the BeOS partition. In BeOS the directory "/boot/home" is there for user-specific files, so everything that is yours goes there. I would recommend creating a folder inside the home directory called 'develop' and a subfolder called 'vstplugins' inside of that. Copy the directory 'source/common' from the SDK into the 'vstplugins' folder, and the file called 'vstgui.o' into a new folder 'vstplugins/lib'.<br>
+		After you've done that, the structure should look something like this:
+		<blockquote><pre>
+/boot/home/develop/vstplugins/
+/boot/home/develop/vstplugins/common
+	AEffect.h
+	aeffectx.h
+	AEffEditor.hpp
+	AudioEffect.cpp
+	AudioEffect.hpp
+	audioeffectx.cpp
+	audioeffectx.h
+	vstcontrols.h
+	vstgui.h
+/boot/home/develop/vstplugins/lib
+	libvstgui.o
+		</Blockquote></pre>
+		<font size=-1><i>
+			Note: the directory structure above is only a recommendation. Of course you can put the files anywhere you want, but I'll assume this structure for the following instructions.
+		</i></font>
+	</p>
+
+<! BEGIN "Create a BeIDE Project" SECTION>
+	<p><br><hr><br><font size=+1>
+		<a name="create_project"></a><b>Create a BeIDE Project</B><br><br>
+	</font></p>
+
+	<p>
+		To simplify things even further, I've created a BeIDE template for your convenience.<br>
+		Get it here: <a href="vst_stationery.zip">vst_stationery.zip</a> [3 kB].
+		Install it as suggested by the included 'Read Me' file.
+	</p>
+	<p>
+		When you've got that, launch the BeIDE from the Be/Applications menu, and a empty editor window will pop up. Select 'New Project...' from its 'File' menu and you should be getting this window:<br><br>
+		<img src="new_project.jpg" align="CENTER"><br><br>
+		Select the 'VST PlugIn' entry and click 'Create', leaving the 'Create Folder' option checked. Next you will be asked to select a directory and project name. Using the file panel, navigate into the 'develop/vstplugins' directory you've created before, and type in the name of your plugin (e.g. MyPlugIn.proj), which will become the project and folder name, and continue by clicking 'OK'.<br>
+	</p>
+	<p>
+		Now you'll have to change the name of the binary image that will be linked (i.e. what will become the file name of your plug). To do this, select 'Settings...' from the 'Window' menu. A window similar to this should open:<br><br>
+		<img src="file_name.jpg" align="CENTER"><br><br>
+		Select the 'Project/x86 ELF Project' item in the left-hand list. Then enter the name of your PlugIn into the 'File Name' text field and 'Save'.<br><br>
+	</p>
+
+<! BEGIN "Import the PlugIn Source Code" SECTION>
+	<p><br><hr><br><font size=+1>
+		<a name="import_code"></a><b>Import the PlugIn Source Code</B><br><br>
+	</font></p>
+
+	<p>
+		Next thing is to copy the source code of your PlugIn into the project folder. To access your code on a different partition see 
+		<a href="#install_sdk">Install the SDK files</a>. You'll just need the actual source (i.e. *.cpp, *.hpp and *.h). When you've copied them into the project directory, you simply need to drag the *.cpp files into the project window, which will add them to the list. Your project window should now look something like this:<br><br>
+		<img src="project_done.jpg" align="CENTER"><br><br>
+		Now you can try to compile by choosing 'Make' from the 'Project' menu. Normally this should just work.
+	<p>
+		If your plug uses the VSTGUI though, you'll get a linker error here. The <a href="vstgui.html">next page</a> details on the additonal work to do for PlugIns using the VSTGUI...
+	</p>
+
+	<p><hr>
+	<font size=-1><i>
+		VST is a trademark of Steinberg Soft- und Hardware GmbH
+	</i></font></p>
+
+</BODY>
+
+</HTML>
