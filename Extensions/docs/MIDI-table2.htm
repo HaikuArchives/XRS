@@ -1,0 +1,189 @@
+<HTML>
+
+<HEAD>
+<TITLE>MIDI Messages Table 2</TITLE>
+
+</HEAD>
+
+<BODY BACKGROUND="../images/midibgr2.gif">
+<HR>
+
+<H3>Table 2 of 3 - Expanded Messages List (Status Bytes) </H3>
+<P>
+The following table lists Status Bytes in binary numerical order.
+This table is intended as a quick reference to all Status Bytes.
+<P>
+See also:
+
+<UL>
+<LI><A HREF="table1.htm">Table 1</A> - Summary of MIDI Messages
+<LI><A HREF="table3.htm">Table 3</A> - Summary of Controller Messages
+(Data Bytes)
+</UL>
+
+<p>Additional messages are listed in the printed documentation available from
+the MMA.</p>
+<P align="center">
+<B>WARNING! Details about implementing these messages can dramatically
+impact<br>
+compatibility with other products. We strongly recommend
+consulting the official<br>
+</B> <a HREF="specinfo.htm">MMA Detailed MIDI Specification</a>
+<B>for additional information.</B>
+<HR>
+
+<PRE>
+==============================================================================
+
+                 TABLE 2: Expanded Status Bytes List
+  (adapted from &quot;MIDI by the Numbers&quot; by D. Valenti, Electronic Musician 2/88)
+              Updated 1995 By the MIDI Manufacturers Association
+
+            STATUS BYTE                        |          DATA BYTES
+------------------------------------------------------------------------------
+   1st Byte Value |  Function                  |    2nd        |    3rd     
+ - - - - - - - - -|                            |    Byte       |    Byte
+  Binary |Hex| Dec|                            |               |
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 10000000= 80= 128| Chan 1      Note off       |  Note Number  | Note Velocity
+ 10000001= 81= 129| Chan 2         &quot;           |   (0-127)     |   (0-127)
+ 10000010= 82= 130| Chan 3         &quot;           |     see       |      &quot;
+ 10000011= 83= 131| Chan 4         &quot;           |    Table      |      &quot;
+ 10000100= 84= 132| Chan 5         &quot;           |      4        |      &quot;
+ 10000101= 85= 133| Chan 6         &quot;           |      &quot;        |      &quot;
+ 10000110= 86= 134| Chan 7         &quot;           |      &quot;        |      &quot;
+ 10000111= 87= 135| Chan 8         &quot;           |      &quot;        |      &quot;
+ 10001000= 88= 136| Chan 9         &quot;           |      &quot;        |      &quot;
+ 10001001= 89= 137| Chan 10        &quot;           |      &quot;        |      &quot;
+ 10001010= 8A= 138| Chan 11        &quot;           |      &quot;        |      &quot;
+ 10001011= 8B= 139| Chan 12        &quot;           |      &quot;        |      &quot;
+ 10001100= 8C= 140| Chan 13        &quot;           |      &quot;        |      &quot;
+ 10001101= 8D= 141| Chan 14        &quot;           |      &quot;        |      &quot;
+ 10001110= 8E= 142| Chan 15        &quot;           |      &quot;        |      &quot;
+ 10001111= 8F= 143| Chan 16        &quot;           |      &quot;        |      &quot;
+ 10010000= 90= 144| Chan 1      Note on        |      &quot;        |      &quot;
+ 10010001= 91= 145| Chan 2         &quot;           |      &quot;        |      &quot;
+ 10010010= 92= 146| Chan 3         &quot;           |      &quot;        |      &quot;
+ 10010011= 93= 147| Chan 4         &quot;           |      &quot;        |      &quot;
+ 10010100= 94= 148| Chan 5         &quot;           |      &quot;        |      &quot;
+ 10010101= 95= 149| Chan 6         &quot;           |      &quot;        |      &quot;
+ 10010110= 96= 150| Chan 7         &quot;           |      &quot;        |      &quot;
+ 10010111= 97= 151| Chan 8         &quot;           |      &quot;        |      &quot;
+ 10011000= 98= 152| Chan 9         &quot;           |      &quot;        |      &quot;
+ 10011001= 99= 153| Chan 10        &quot;           |      &quot;        |      &quot;
+ 10011010= 9A= 154| Chan 11        &quot;           |      &quot;        |      &quot;
+ 10011011= 9B= 155| Chan 12        &quot;           |      &quot;        |      &quot;
+ 10011100= 9C= 156| Chan 13        &quot;           |      &quot;        |      &quot;
+ 10011101= 9D= 157| Chan 14        &quot;           |      &quot;        |      &quot;
+ 10011110= 9E= 158| Chan 15        &quot;           |      &quot;        |      &quot;
+ 10011111= 9F= 159| Chan 16        &quot;           |      &quot;        |      &quot;
+ 10100000= A0= 160| Chan 1     Polyphonic      |      &quot;        |  Aftertouch
+ 10100001= A1= 161| Chan 2     Aftertouch      |      &quot;        |    amount
+ 10100010= A2= 162| Chan 3         &quot;           |      &quot;        |    (0-127)
+ 10100011= A3= 163| Chan 4         &quot;           |      &quot;        |      &quot;
+ 10100100= A4= 164| Chan 5         &quot;           |      &quot;        |      &quot;
+ 10100101= A5= 165| Chan 6         &quot;           |      &quot;        |      &quot;
+ 10100110= A6= 166| Chan 7         &quot;           |      &quot;        |      &quot;
+ 10100111= A7= 167| Chan 8         &quot;           |      &quot;        |      &quot;
+ 10101000= A8= 168| Chan 9         &quot;           |      &quot;        |      &quot;
+ 10101001= A9= 169| Chan 10        &quot;           |      &quot;        |      &quot;
+ 10101010= AA= 170| Chan 11        &quot;           |      &quot;        |      &quot;
+ 10101011= AB= 171| Chan 12        &quot;           |      &quot;        |      &quot;
+ 10101100= AC= 172| Chan 13        &quot;           |      &quot;        |      &quot;
+ 10101101= AD= 173| Chan 14        &quot;           |      &quot;        |      &quot;
+ 10101110= AE= 174| Chan 15        &quot;           |      &quot;        |      &quot;
+ 10101111= AF= 175| Chan 16        &quot;           |      &quot;        |      &quot;
+ 10110000= B0= 176| Chan 1      Control/       |     See       |     See
+ 10110001= B1= 177| Chan 2     Mode change     |    Table      |    Table
+ 10110010= B2= 178| Chan 3         &quot;           |      3        |      3
+ 10110011= B3= 179| Chan 4         &quot;           |      &quot;        |      &quot;
+ 10110100= B4= 180| Chan 5         &quot;           |      &quot;        |      &quot;
+ 10110101= B5= 181| Chan 6         &quot;           |      &quot;        |      &quot;
+ 10110110= B6= 182| Chan 7         &quot;           |      &quot;        |      &quot;
+ 10110111= B7= 183| Chan 8         &quot;           |      &quot;        |      &quot;
+ 10111000= B8= 184| Chan 9         &quot;           |      &quot;        |      &quot;
+ 10111001= B9= 185| Chan 10        &quot;           |      &quot;        |      &quot;
+ 10111010= BA= 186| Chan 11        &quot;           |      &quot;        |      &quot;
+ 10111011= BB= 187| Chan 12        &quot;           |      &quot;        |      &quot;
+ 10111100= BC= 188| Chan 13        &quot;           |      &quot;        |      &quot;
+ 10111101= BD= 189| Chan 14        &quot;           |      &quot;        |      &quot;
+ 10111110= BE= 190| Chan 15        &quot;           |      &quot;        |      &quot;
+ 10111111= BF= 191| Chan 16        &quot;           |      &quot;        |      &quot;
+ 11000000= C0= 192| Chan 1      Program        |  Program #    |     NONE
+ 11000001= C1= 193| Chan 2       change        |   (0-127)     |      &quot;
+ 11000010= C2= 194| Chan 3         &quot;           |      &quot;        |      &quot;
+ 11000011= C3= 195| Chan 4         &quot;           |      &quot;        |      &quot;
+ 11000100= C4= 196| Chan 5         &quot;           |      &quot;        |      &quot;
+ 11000101= C5= 197| Chan 6         &quot;           |      &quot;        |      &quot;
+ 11000110= C6= 198| Chan 7         &quot;           |      &quot;        |      &quot;
+ 11000111= C7= 199| Chan 8         &quot;           |      &quot;        |      &quot;
+ 11001000= C8= 200| Chan 9         &quot;           |      &quot;        |      &quot;
+ 11001001= C9= 201| Chan 10        &quot;           |      &quot;        |      &quot;
+ 11001010= CA= 202| Chan 11        &quot;           |      &quot;        |      &quot;
+ 11001011= CB= 203| Chan 12        &quot;           |      &quot;        |      &quot;
+ 11001100= CC= 204| Chan 13        &quot;           |      &quot;        |      &quot;
+ 11001101= CD= 205| Chan 14        &quot;           |      &quot;        |      &quot;
+ 11001110= CE= 206| Chan 15        &quot;           |      &quot;        |      &quot;
+ 11001111= CF= 207| Chan 16        &quot;           |      &quot;        |      &quot;
+ 11010000= D0= 208| Chan 1      Channel        |  Aftertouch   |      &quot;
+ 11010001= D1= 209| Chan 2     Aftertouch      |    amount     |      &quot;
+ 11010010= D2= 210| Chan 3         &quot;           |   (0-127)     |      &quot;
+ 11010011= D3= 211| Chan 4         &quot;           |      &quot;        |      &quot;
+ 11010100= D4= 212| Chan 5         &quot;           |      &quot;        |      &quot;
+ 11010101= D5= 213| Chan 6         &quot;           |      &quot;        |      &quot;
+ 11010110= D6= 214| Chan 7         &quot;           |      &quot;        |      &quot;
+ 11010111= D7= 215| Chan 8         &quot;           |      &quot;        |      &quot;
+ 11011000= D8= 216| Chan 9         &quot;           |      &quot;        |      &quot;
+ 11011001= D9= 217| Chan 10        &quot;           |      &quot;        |      &quot;
+ 11011010= DA= 218| Chan 11        &quot;           |      &quot;        |      &quot;
+ 11011011= DB= 219| Chan 12        &quot;           |      &quot;        |      &quot;
+ 11011100= DC= 220| Chan 13        &quot;           |      &quot;        |      &quot;
+ 11011101= DD= 221| Chan 14        &quot;           |      &quot;        |      &quot;
+ 11011110= DE= 222| Chan 15        &quot;           |      &quot;        |      &quot;
+ 11011111= DF= 223| Chan 16        &quot;           |      &quot;        |      &quot;
+ 11100000= E0= 224| Chan 1       Pitch         |    Pitch      |    Pitch
+ 11100001= E1= 225| Chan 2       wheel         |    wheel      |    wheel
+ 11100010= E2= 226| Chan 3      control        |     LSB       |     MSB
+ 11100011= E3= 227| Chan 4         &quot;           |   (0-127)     |   (0-127)
+ 11100100= E4= 228| Chan 5         &quot;           |      &quot;        |      &quot;
+ 11100101= E5= 229| Chan 6         &quot;           |      &quot;        |      &quot;
+ 11100110= E6= 230| Chan 7         &quot;           |      &quot;        |      &quot;
+ 11100111= E7= 231| Chan 8         &quot;           |      &quot;        |      &quot;
+ 11101000= E8= 232| Chan 9         &quot;           |      &quot;        |      &quot;
+ 11101001= E9= 233| Chan 10        &quot;           |      &quot;        |      &quot;
+ 11101010= EA= 234| Chan 11        &quot;           |      &quot;        |      &quot;
+ 11101011= EB= 235| Chan 12        &quot;           |      &quot;        |      &quot;
+ 11101100= EC= 236| Chan 13        &quot;           |      &quot;        |      &quot;
+ 11101101= ED= 237| Chan 14        &quot;           |      &quot;        |      &quot;
+ 11101110= EE= 238| Chan 15        &quot;           |      &quot;        |      &quot;
+ 11101111= EF= 239| Chan 16        &quot;           |      &quot;        |      &quot;
+ 11110000= F0= 240| System Exclusive           |      **       |      **
+ 11110001= F1= 241| MIDI Time Code Qtr. Frame  |  -see spec-   |  -see spec-   
+ 11110010= F2= 242| Song Position Pointer      |     LSB       |     MSB
+ 11110011= F3= 243| Song Select(Song #)        |   (0-127)     |     NONE
+ 11110100= F4= 244| Undefined (Reserved)       |      ?        |      ?
+ 11110101= F5= 245| Undefined (Reserved)       |      ?        |      ?
+ 11110110= F6= 246| Tune request               |     NONE      |     NONE
+ 11110111= F7= 247| End of SysEx (EOX)         |      &quot;        |      &quot;
+ 11111000= F8= 248| Timing clock               |      &quot;        |      &quot;
+ 11111001= F9= 249| Undefined (Reserved)       |      &quot;        |      &quot;
+ 11111010= FA= 250| Start                      |      &quot;        |      &quot;
+ 11111011= FB= 251| Continue                   |      &quot;        |      &quot;
+ 11111100= FC= 252| Stop                       |      &quot;        |      &quot;
+ 11111101= FD= 253| Undefined (Reserved)       |      &quot;        |      &quot;
+ 11111110= FE= 254| Active Sensing             |      &quot;        |      &quot;
+ 11111111= FF= 255| System Reset               |      &quot;        |      &quot;
+
+ ** Note: System Exclusive (data dump) 2nd byte= Vendor ID (or Universal
+          Exclusive) followed by more data bytes and ending with EOX.</PRE>
+
+<HR>
+
+<UL>
+</UL>
+
+<P>
+<CENTER><A HREF="resource.htm">To MIDI Information Page</A></CENTER>
+</BODY>
+
+</HTML>

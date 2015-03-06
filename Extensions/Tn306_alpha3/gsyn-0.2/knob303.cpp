@@ -1,0 +1,168 @@
+
+#include "knob303.h"
+#include "stdio.h"
+#include "Xed_Utils.h"
+
+
+
+const 	rgb_color  	red 	={253,148,106,255};
+const 	rgb_color  	yellow 	={247,255,146,181};
+const 	rgb_color  	green 	={99,203,146,156};
+const 	rgb_color  	violet 	={206,203,255,156};
+const 	rgb_color  	violet_h={226,183,255,156};
+const 	rgb_color  	pink 	={156,154,154,255};
+
+
+#define	 TUNE		1978
+#define 	CUTOFF	1979
+#define	RESO		1980
+#define	ENVMOD	1981
+#define	DECAY	1982
+#define	ACCENT	1983
+#define	DELAY		1984
+#define	FEEDBK	1985
+#define	DIST		1986
+
+#define	POT_H		24
+
+#include "SpecialTrack.h"
+TB303Knobs::TB303Knobs(BRect r) : BView(r, "TN306", B_FOLLOW_NONE,B_WILL_DRAW|B_FRAME_EVENTS)
+{
+	
+	
+	tune=MakeController(BRect(20,30,0,0),"tune","tune",-12,12,-12,yellow,TUNE);
+	
+	//name_label=new BTextControl(BRect(63,30,140,42),"nmae",NULL,"text",NULL);
+	//AddChild(name_label);
+	
+	cutoff=MakeController(BRect(100,80,0,0),"cutoff","cutoff",0,128,0,yellow,CUTOFF);
+	reso=MakeController(BRect(140,80,0,0),"reso","reso",0,128,0,yellow,RESO);
+	envmod=MakeController(BRect(20,80,185,115),"EnvMod","EnvMod",0,128,0,yellow,ENVMOD);
+	decay=MakeController(BRect(60,80,80,180),"decay","Decay",0,128,0,yellow,DECAY);
+	
+	delay=MakeController(BRect(20,130,150,180),"delay","delay",0,128,0,yellow,DELAY);
+	feedbk=MakeController(BRect(60,130,185,180),"feedback","feedback",0,128,0,yellow,FEEDBK);
+	dist=MakeController(BRect(140,130,80,245),"dist","dist",0,128,0,yellow,DIST);
+	
+	
+	
+	seq=NULL;
+		
+	tune->SetValue(0);
+	
+	
+	SetViewColor(0,0,156);
+	SetLowColor(0,0,156);
+	SetHighColor(255,255,255);
+	
+}
+
+void
+TB303Knobs::Reset(SpecialTrack *s)
+{
+	seq=s; vco=&s->vco; vcf=&s->vcf; vca=&s->vca; dly=&s->dly;
+	if(Window()->Lock()){
+	cutoff->SetValue(vcf->getCutoff()*128);
+	reso->SetValue(vcf->getResonance()*128);
+	envmod->SetValue(vcf->getEnvmod()*128);
+	decay->SetValue(vcf->getDecay()*128);
+	
+	delay->SetValue(dly->getVol()*128);
+	dist->SetValue(dly->getDistort()*128);
+	feedbk->SetValue(dly->getFeedback()*128);
+	
+	tune->SetValue(seq->getTune());
+	
+	Window()->Unlock();
+	}
+}
+
+
+TB303Knobs::~TB303Knobs()
+{
+}
+
+void TB303Knobs::do_tune(float t) { seq->Tune((int)t); }
+void TB303Knobs::do_cutoff(float c) { vcf->Cutoff(c); }
+void TB303Knobs::do_reso(float r) { vcf->Resonance(r); }
+void TB303Knobs::do_envmod(float e) { vcf->Envmod(e); }
+void TB303Knobs::do_decay(float d) { vcf->Decay(d); }
+//void TB303Knobs::do_accent(float a) { }
+void TB303Knobs::do_delay(float d) { dly->Vol(d); }
+void TB303Knobs::do_feedbk(float d) { dly->Feedback(d); }
+void TB303Knobs::do_dist(float d) { dly->Distort(d*16384); } //
+
+void
+TB303Knobs::MessageReceived(BMessage* message)
+{
+	if(seq==NULL) return;
+	
+	switch(message->what)
+	{
+		
+		case TUNE:
+				
+			do_tune((float)tune->Value());
+		break;
+	
+	
+		case	CUTOFF:
+			do_cutoff((float)cutoff->Value()/128.);
+		case RESO:
+			do_reso((float)reso->Value()/128.);
+		break;
+		case ENVMOD:
+			do_envmod((float)envmod->Value()/128.);
+		break;
+		case DECAY:
+			do_decay((float)decay->Value()/128.);
+		break;
+		case ACCENT:
+			//do_accent((float)accent->Value()/128.);
+		break;
+		case DELAY:
+			do_delay((float)delay->Value()/128.);
+		break;
+		case FEEDBK:
+			do_feedbk((float)feedbk->Value()/128.);
+		break;
+		case DIST:
+			do_dist((float)dist->Value()/128.);
+		break;
+	 	
+	 	default:
+			BView::MessageReceived(message);
+	}
+}
+void TB303Knobs::AttachedToWindow()
+{
+	tune->SetTarget(this); 
+	cutoff->SetTarget(this);
+	reso->SetTarget(this);
+	envmod->SetTarget(this);
+	decay->SetTarget(this);
+	//accent->SetTarget(this);
+	delay->SetTarget(this); 
+	feedbk->SetTarget(this);
+	dist->SetTarget(this);
+}
+
+BPot *
+TB303Knobs::MakeController(BRect r,const char* n1,const char* n2,int min,int max ,int cur,const rgb_color col,int32 ms)
+{
+	
+	
+	BPot	*p;
+	info=new BMessage(ms);
+	p=new BPot(BRect(r.left,r.top,r.left+POT_H,r.top+POT_H), "","",info,NULL,min,max,::MakeBitmapSkin("volpad"),NULL, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP,B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE_JUMP);
+	p->SetTarget(this);
+	p->SetHighColor(col);
+	
+	p->SetValue(cur);
+	//p->Archive(info);
+	p->SetFontSize(9);
+	//r.Set(r.left+3,r.top+POT_H+5,r.left+POT_H+53,r.top+POT_H+20);
+	AddChild(p);
+	
+	return p;
+}

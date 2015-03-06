@@ -1,0 +1,791 @@
+/*
+
+	VSTFilter.cpp
+
+	by Georges-Edouard Berenger
+	© 2000, Steinberg Soft- und Hard GmbH, All Rights Reserved.
+
+*/
+
+#ifndef _VSTFILTER_H_
+#include "VSTFilter.h"
+#endif
+
+/*#ifndef _VSTSOUND_H_
+#include "VSTSound.h"
+#endif*/
+
+/*#ifndef _VSTSOUND_CONFIGURE_H_
+#include "VSTSoundConfigure.h"
+#endif*/
+
+#include "Menu.h"
+#include "MenuItem.h"
+
+#include <MidiRoster.h>
+#include "stdio.h"
+#include "stdlib.h"
+#include "OS.h"
+#include <MidiProducer.h>
+#include "SupportKit.h"
+#include "VSTSoundConfigure.h"
+
+#include "Node.h"
+#include "Mime.h"
+#include "Message.h"
+
+//static void load_plug_ins (const char *path, BList& list);
+
+const int kDefaultBlockSize = 4096;
+const int kDefaultFrameRate = 44100;
+const int kAdapterVersion = 0x0100;
+
+BMessage *info;
+
+VstTimeInfo time_info;
+int bpm;
+int bpm_change;
+
+VSTFilterPlugin::VSTFilterPlugin (const char *filename) : 
+	fSampleRate (kDefaultFrameRate), fBlockSize (kDefaultBlockSize),  fIdleSem (-1)
+{
+	//fImage = load_add_on (fFactory->fAddonPath.String ());
+	fImage = load_add_on (filename);
+	if (fImage > 0)
+	{
+		AEffect * (*main_plugin) (audioMasterCallback audioMaster);
+		if (get_image_symbol (fImage, "main_plugin", B_SYMBOL_TYPE_TEXT, (void**) &main_plugin) == B_OK)
+		{
+			fEffect = (*main_plugin) (&audioMaster);
+			if (fEffect && fEffect->magic == kEffectMagic)
+			{
+				fLastFilter =(uint32) system_time ();
+				Register (this, fEffect);
+				// set up the plugin
+				fEffect->dispatcher (fEffect, effOpen, 0, 0, 0, 0.);
+				fEffect->dispatcher (fEffect,effSetProgram  ,  0, 0, NULL, 0.f);
+				fEffect->dispatcher (fEffect, effSetSampleRate, 0, 0, 0, float (fSampleRate));
+				fEffect->dispatcher (fEffect, effSetBlockSize, 0, kDefaultBlockSize, 0, 0.);
+				fEffect->dispatcher (fEffect, effMainsChanged, 0, 1, 0, 0.);	// turn on
+				bpm_change=true;
+				return;
+			}
+			// plugin is not ok. Leak rather than take a risk to crash...
+		}
+		/*else
+			fprintf (stderr, "entry point not found in the plugin\n");*/
+		unload_add_on (fImage);
+		fImage = 0;
+	}
+	/*else
+		fprintf (stderr, "The addon could not be loaded: %s\n", strerror (fImage));*/
+	
+	
+}
+void
+VSTFilterPlugin::setBPM(int y)
+{
+	bpm=y;
+	memset(&time_info, 0, sizeof(time_info));
+	time_info.samplePos = 0;
+	time_info.sampleRate = 44100;
+	time_info.flags |= kVstTempoValid;
+	time_info.tempo = bpm;
+	bpm_change=true;
+}
+
+VSTFilterPlugin::~VSTFilterPlugin ()
+{
+	//printf("Deleting VST..\n");
+	if (fImage > 0)
+	{
+		// terminate the idle thread if necessary
+		sem_info sinfo;
+		if (fIdleSem != -1 && get_sem_info (fIdleSem, &sinfo) == B_OK)
+		{
+			delete_sem (fIdleSem);
+			status_t	r;
+			wait_for_thread (fIdleThread, &r);
+		}
+		// stop midi input if necessary
+		
+		//QUI-QUI
+		/*
+		if (fMidiConsumer)
+		{
+//			puts ("Closing midi consumer");
+			sem_id finish = fMidiConsumer->Finish ();
+		
+			acquire_sem_etc (finish, 1, B_RELATIVE_TIMEOUT, 1000000);
+//			printf ("result: %s\n", strerror (r));			
+		}*/
+		fEffect->dispatcher (fEffect, effClose, 0, 0, 0, 0.);
+		Unregister (fEffect);
+		unload_add_on (fImage);
+	}
+}
+
+//	Idle thread's entry point.
+static long idle_thread_start (void *arg)
+{
+	VSTFilterPlugin * plugin = (VSTFilterPlugin*) arg;
+	plugin->IdleLoop ();
+	return B_OK;
+}
+
+long VSTFilterPlugin::NeedIdle ()
+{
+//	printf ("Idle needed for %s\n", fFactory->fName.String ());
+	sem_info	sinfo;
+	if (fIdleSem == -1 || get_sem_info (fIdleSem, &sinfo) != B_OK)
+	{
+//		puts ("Creating Idle thread");
+		fIdleSem = create_sem (0, "VST plugin Idle Semaphore");
+		resume_thread (fIdleThread = spawn_thread (idle_thread_start, "VST Plugin Idle", B_NORMAL_PRIORITY, this));
+	}
+	return 1;
+}
+
+void VSTFilterPlugin::IdleLoop ()
+{
+	// Note this common BeOS use of a semaphore to control timing & live of a user level timer.
+	// The timer will try to acquire the semaphore. In "normal" cases, it will time out
+	// and will then do its timer's work (in that case call the plugin idle call).
+	// When the timer has to be destroyed, then the semaphore is simply deleted.
+	// The acquisition of the semaphore fails, and the timer knows it has to die.
+	// This allows very compact, efficient & clean code.
+
+//	puts ("Idle Thread created!");
+	bigtime_t	nextIdle = system_time ();
+	while (acquire_sem_etc (fIdleSem, 1, B_ABSOLUTE_TIMEOUT, nextIdle) == B_TIMED_OUT)
+	{
+		nextIdle += 10000;	// idle every 10 ms.
+		if (!fEffect->dispatcher (fEffect, effIdle, 0, 0, 0, 0))
+		{
+			// The plugin says that no more idle is needed!
+//			printf ("Idle no longer needed!\n");
+			delete_sem (fIdleSem);
+			fIdleSem = -1;
+			return;
+		}
+	}
+//	printf ("Idle thread gone!\n");
+}
+
+long VSTFilterPlugin::WantMidi ()
+{
+	//QUI--QUI
+	/*
+	if (fMidiConsumer == 0)
+	{
+		fMidiConsumer = new MIDI_consumer (this);
+		if (fMidiPortName.Length () < 1)
+			first_producer_name (fMidiPortName);
+		if (fMidiPortName.Length () > 0)
+			fMidiConsumer->SetSource (fMidiPortName.String ());
+	}*/
+	return 1;
+}
+
+void VSTFilterPlugin::SetMidiProducer (int32 id)
+{	//QUI__QUI
+	/*BMidiProducer * producer = BMidiRoster::FindProducer (id);
+	if (producer)
+		fMidiPortName = producer->Name ();
+	else
+		fMidiPortName = "";
+	
+	//if (producer && fMidiConsumer)
+	//	fMidiConsumer->SetSource (producer);
+	else if (producer)
+		producer->Release ();*/
+}
+
+const char * VSTFilterPlugin::GetMidiProducerName ()
+{
+	//return fMidiPortName.String ();
+	return "XRSBeta";
+	//time
+}
+
+status_t VSTFilterPlugin::FilterFloat (float **input, float **output, int32 framecount, void *info)
+{
+	fLastFilter = (uint32) system_time ();
+	// value set by default. VST plugin need to know how big the buffer
+	// *might* be, that is, the upper limit of framecount...
+	if (framecount > fBlockSize)
+	{
+		// with SoundPlay, this should happen only once when the plugin is first used...
+		fEffect->dispatcher (fEffect, effMainsChanged, 0, 0, 0, 0.);	// turn off
+		fEffect->dispatcher (fEffect, effSetBlockSize, 0, framecount, 0, 0.);
+		fEffect->dispatcher (fEffect, effMainsChanged, 0, 1, 0, 0.);	// turn on
+		fBlockSize = framecount;
+	}
+	if (fEffect->flags & effFlagsIsSynth)
+	{
+		// VST instruments add their audio to the audio stream...
+		memcpy (output[0], input[0], sizeof (float) * framecount);
+		memcpy (output[1], input[1], sizeof (float) * framecount);
+		float*	outputs[VST_INSTRUMENTS_MAX_OUTPUT];
+		for (int out = 0; out < fEffect->numOutputs; out++)
+			outputs[out] = output[out % 2];
+		fEffect->process (fEffect, input, outputs, framecount);
+		
+	}
+	// "normal" plugins
+	else if (fEffect->flags & effFlagsCanReplacing)
+	{
+		if (fEffect->numOutputs < 2)
+			memcpy (output[1], input[1], sizeof (float) * framecount);
+			
+		fEffect->processReplacing (fEffect, input, output, framecount);
+		
+		
+		
+	}
+	else
+	{
+		memset (output[0], 0, sizeof (float) * framecount);
+		if (fEffect->numOutputs < 2)
+			memcpy (output[1], input[1], sizeof (float) * framecount);
+		else
+			memset (output[1], 0, sizeof (float) * framecount);
+		fEffect->process (fEffect, input, output, framecount);
+		//printf("case c\n");
+	}
+	
+	//printf("ci provo %ld \n",fBlockSize);
+	return B_OK;
+}
+
+BView * VSTFilterPlugin::Configure ()
+{
+	return (new VSTConfigureView(this));
+}
+
+void VSTFilterPlugin::SetConfig (BMessage *config)
+{	// BMessage -> plugin
+	const float *	params;
+	const void *	chunk;
+	ssize_t			size;
+	int32			currentProgram;
+	if (config->FindInt32 ("current", &currentProgram) == B_OK)
+	{
+		if (fEffect->flags & effFlagsProgramChunks)
+		{
+			int	prog = 0;
+			const char * name;
+			while (config->FindData ("chunk", B_RAW_TYPE, prog, &chunk, &size) == B_OK
+				&& config->FindString ("name", prog, &name) == B_OK
+				&& prog < fEffect->numPrograms)
+			{
+				fEffect->dispatcher (fEffect, effSetProgram, 0, prog++, 0, 0.f);
+				fEffect->dispatcher (fEffect, effSetProgramName, 0, 0, (char*) name, 0);
+				fEffect->dispatcher (fEffect, effSetChunk, 0, size, (void*) chunk, 0.f);
+			}
+		}
+		else
+		{
+			int	prog = 0;
+			const char * name;
+			while (config->FindData ("floats", B_RAW_TYPE, prog, (const void **) &params, &size) == B_OK
+				&& config->FindString ("name", prog, &name) == B_OK
+				&& prog < fEffect->numPrograms)
+			{
+				fEffect->dispatcher (fEffect, effSetProgram, 0, prog++, 0, 0.f);
+				fEffect->dispatcher (fEffect, effSetProgramName, 0, 0, (char*) name, 0);
+				int	count = size / sizeof (float);
+				for (int p = 0; p < count; p++)
+				{
+					fEffect->setParameter (fEffect, p, params[p]);
+				}
+			}
+		}
+		fEffect->dispatcher (fEffect, effSetProgram, 0, currentProgram, 0, 0.f);
+	}
+	//QUI__QUI
+	//if (config->FindString ("midi", &fMidiPortName) != B_OK)
+	//	first_producer_name (fMidiPortName);
+	//else if (fMidiConsumer)
+	//	fMidiConsumer->SetSource (fMidiPortName.String ());
+}
+
+void VSTFilterPlugin::GetConfig (BMessage *config)
+{	// plugin -> BMessage
+	int32 currentProgram = fEffect->dispatcher (fEffect, effGetProgram, 0, 0, 0, 0.f);
+	if (fEffect->flags & effFlagsProgramChunks)
+	{
+		void *		chunk;
+		ssize_t		size;
+		int			progCount = fEffect->numPrograms;
+		config->MakeEmpty ();
+		char	name[32];
+		for (int prog = 0; prog < progCount; prog++)
+		{
+			fEffect->dispatcher (fEffect, effSetProgram, 0, prog, 0, 0.f);
+			size = fEffect->dispatcher (fEffect, effGetChunk, 0, 0, &chunk, 0.f);
+			config->AddData ("chunk", B_RAW_TYPE, chunk, size);
+			fEffect->dispatcher (fEffect, effGetProgramName, 0, 0, name, 0);
+			config->AddString ("name", name);
+		}
+	}
+	else
+	{
+		int		count = fEffect->numParams;
+		int		progCount = fEffect->numPrograms;
+		if (count > 0)
+		{
+			char	name[32];
+			float *	params = new float[count];
+			config->MakeEmpty ();
+			for (int prog = 0; prog < progCount; prog++)
+			{
+				fEffect->dispatcher (fEffect, effSetProgram, 0, prog, 0, 0.f);
+				for (int p = 0; p < count; p++)
+					params[p] = fEffect->getParameter (fEffect, p);
+				config->AddData ("floats", B_RAW_TYPE, params, count * sizeof (float));
+				fEffect->dispatcher (fEffect, effGetProgramName, 0, 0, name, 0);
+				config->AddString ("name", name);
+			}
+			delete[] params;
+		}
+	}
+	config->AddInt32 ("current", currentProgram);
+	fEffect->dispatcher (fEffect, effSetProgram, 0, currentProgram, 0, 0.f);
+	//if (fMidiPortName.Length () > 0)
+	//	config->AddString ("midi", fMidiPortName);
+}
+
+/*
+ VST plugin will make request to the host by calling the audioMaster function.
+ This function needs to know which plugin is doing the request, therefore, there is
+ this "register" which monitors which VST plugin is active. 
+*/
+void VSTFilterPlugin::Register (VSTFilterPlugin * plugin, AEffect * effect)
+{
+	fLock.Lock ();
+	int	index = 0;
+	while (index < fPairsCount && fPairs[index].effect != NULL)
+		index++;
+	if (index >= fPairsCount)
+	{
+		int newCount = fPairsCount + 10;
+		if (fPairsCount > 0)
+			fPairs = (effectPluginPair*) realloc (fPairs, sizeof (effectPluginPair) * newCount);
+		else
+			fPairs = (effectPluginPair*) malloc (sizeof (effectPluginPair) * newCount);
+		while (fPairsCount < newCount)
+			fPairs[fPairsCount++].effect = NULL;
+	}
+	fPairs[index].effect = effect;
+	fPairs[index].plugin = plugin;
+	fLock.Unlock ();
+}
+
+void VSTFilterPlugin::Unregister (AEffect * effect)
+{
+	fLock.Lock ();
+	int	index = 0;
+	while (index < fPairsCount)
+	{
+		if (fPairs[index].effect == effect)
+		{
+			fPairs[index].effect = NULL;
+			break;
+		}
+		index++;
+	}
+	fLock.Unlock ();
+}
+
+VSTFilterPlugin * VSTFilterPlugin::Identify (AEffect * effect)
+{
+	fLock.Lock ();
+	int	index = 0;
+	VSTFilterPlugin * plugin = NULL;
+	while (index < fPairsCount)
+	{
+		if (fPairs[index].effect == effect)
+		{
+			plugin = fPairs[index].plugin;
+			break;
+		}
+		index++;
+	}
+	/*if (plugin)
+		printf ("Identified plugin \n");
+	else
+		puts ("could not identify a plugin");*/
+	fLock.Unlock ();
+	return plugin;
+}
+
+effectPluginPair *	VSTFilterPlugin::fPairs = NULL;
+
+int VSTFilterPlugin::fPairsCount = 0;
+
+BLocker VSTFilterPlugin::fLock;
+
+void certify_fEffect (AEffect * fEffect)
+{
+	//printf ("Testing fEffect %x\n", int (fEffect));
+	if (fEffect->magic == 'VstP')
+		puts ("Magic ok");
+	/*else
+		printf ("Magic not ok: %x\n", int (fEffect->magic));*/
+	//printf ("Progs: %d	Params: %d	Inputs: %d	Outputs: %d\n", int (fEffect->numPrograms), int (fEffect->numParams), int (fEffect->numInputs), int (fEffect->numOutputs));
+}
+
+/*
+ VST plugins may talk to the host for a number of reasons.
+ This call is the main entry point for plug-in -> host calls.
+*/
+long audioMaster (AEffect *eff, long opCode, long index, long value, void *ptr, float opt)
+{
+	long ret = 0;
+	VstTimeInfo *a;
+	
+	switch (opCode)
+	{
+		//---------------------------
+		case audioMasterAutomate:
+			
+			break;
+
+		//---------------------------
+		case audioMasterVersion:
+			ret = 1;
+			break;
+
+		//---------------------------
+		case audioMasterCurrentId:
+			break;
+
+		//---------------------------
+		case audioMasterIdle:
+			// no need to idle a BeOS host (normaly).
+			break;
+
+		//---------------------------
+		case audioMasterPinConnected:
+			break;
+
+		//---------------------------
+		case audioMasterPinConnected+1:// audioMasterMapAsioPorts:
+			break;
+
+
+		//----------------------------------------------------------------------
+		// VSTSDK 2.0
+
+		//---------------------------
+		case audioMasterWantMidi:
+		{
+			/*VSTFilterPlugin * plugin = VSTFilterPlugin::Identify (eff);
+			if (plugin)
+				ret = plugin->WantMidi ();*/
+			break;
+		}
+
+		//---------------------------
+		case audioMasterGetTime:	// returns const VstTimeInfo* (or 0 if not supported)
+									// <value> should contain a mask indicating which fields are required
+									// (see valid masks above), as some items may require extensive
+									// conversions
+		
+		//if ((value & kVstTempoValid) && bpm_change)
+		//{
+			time_info.flags |= kVstTempoValid;
+			time_info.tempo = bpm;
+			ret=(long)&time_info;
+			//bpm_change=false;
+						
+		//}
+		
+									
+		//ret= (long)&time_info ;
+		
+				
+		break;
+
+		//---------------------------
+		case audioMasterProcessEvents:		// VstEvents* in <ptr>
+			break;
+
+		//---------------------------
+		case audioMasterSetTime:			// VstTimenfo* in <ptr>, filter in <value>, not supported
+			
+			
+			a=(VstTimeInfo*)ptr;
+			
+			break;
+
+		//---------------------------
+		case audioMasterTempoAt:			// returns tempo (in bpm * 10000) at sample frame location passed in <value>
+			ret=bpm*10000;	
+		break;
+
+		//---------------------------
+		// parameters
+		case audioMasterGetNumAutomatableParameters:
+			break;
+
+		//---------------------------
+		case audioMasterGetParameterQuantization:	// returns the integer value for +1.0 representation,
+											// or 1 if full single float precision is maintained
+											// in automation. parameter index in <value> (-1: all, any)
+			break;
+
+		//---------------------------
+		// connections, configuration
+		case audioMasterIOChanged:			// numInputs and/or numOutputs has changed
+			break;
+
+		//---------------------------
+		case audioMasterNeedIdle:			// plug needs idle calls (outside its editor window)
+		{
+			VSTFilterPlugin * plugin = VSTFilterPlugin::Identify (eff);
+			if (plugin)
+				ret = plugin->NeedIdle ();
+			break;
+		}
+
+		//---------------------------
+		case audioMasterGetSampleRate:
+		{
+			VSTFilterPlugin * plugin = VSTFilterPlugin::Identify (eff);
+			if (plugin)
+				ret = plugin->GetSampleRate ();
+			else
+				ret = kDefaultFrameRate;
+			break;
+		}
+
+		//---------------------------
+		case audioMasterGetBlockSize:
+		{
+			VSTFilterPlugin * plugin = VSTFilterPlugin::Identify (eff);
+			if (plugin)
+				ret = plugin->GetBlockSize ();
+			else
+				ret = kDefaultBlockSize;
+			break;
+		}
+
+		//---------------------------
+		case audioMasterGetInputLatency:
+			break;
+
+		//---------------------------
+		case audioMasterGetOutputLatency:
+			break;
+
+		//---------------------------
+		case audioMasterGetPreviousPlug:			// input pin in <value> (-1: first to come), returns cEffect*
+			break;
+
+		//---------------------------
+		case audioMasterGetNextPlug:				// output pin in <value> (-1: first to come), returns cEffect*
+			break;
+
+		//---------------------------
+		// realtime info
+		case audioMasterWillReplaceOrAccumulate:	// returns: 0: not supported, 1: replace, 2: accumulate
+			break;
+
+		//---------------------------
+		case audioMasterGetCurrentProcessLevel:	// returns: 0: not supported,
+										// 1: currently in user thread (gui)
+			ret=1;							// 2: currently in audio thread (where process is called)
+										// 3: currently in 'sequencer' thread (midi, timer etc)
+										// 4: currently offline processing and thus in user thread
+										// other: not defined, but probably pre-empting user thread.
+			break;
+
+		//---------------------------
+		case audioMasterGetAutomationState:		// returns 0: not supported, 1: off, 2:read, 3:write, 4:read/write
+			break;
+
+		//---------------------------
+		// offline
+		case audioMasterOfflineStart:
+		case audioMasterOfflineRead:				// ptr points to offline structure, see below. return 0: error, 1 ok
+		case audioMasterOfflineWrite:				// same as read
+		case audioMasterOfflineGetCurrentPass:
+		case audioMasterOfflineGetCurrentMetaPass:
+			break;
+
+		//---------------------------
+		// other
+		case audioMasterSetOutputSampleRate:		// for variable i/o, sample rate in <opt>
+			break;
+
+		//---------------------------
+		case audioMasterGetSpeakerArrangement:		// (long)input in <value>, output in <ptr>
+			break;
+
+		//---------------------------
+		case audioMasterGetVendorString:			// fills <ptr> with a string identifying the vendor (max 64 char)
+			if (ptr)
+			{
+				strcpy ((char*)ptr, "Anzani Andrea");
+				ret = 1;
+			}
+			break;
+
+		//---------------------------
+		case audioMasterGetProductString:		// fills <ptr> with a string with product name (max 64 char)
+			if (ptr)
+			{
+				strcpy ((char*)ptr, "XRS");
+				ret = 1;
+			}
+			break;
+
+		//---------------------------
+		case audioMasterGetVendorVersion:		// returns vendor-specific version
+			ret = kAdapterVersion;
+			break;
+
+		//---------------------------
+		case audioMasterSetIcon:				// void* in <ptr>, format not defined yet
+			break;
+
+		//---------------------------
+		case audioMasterCanDo:					// string in ptr, see below
+		{
+			char* text = (char*)ptr;
+			//printf ("audioMasterCanDo? %s\n", text);
+			if (
+				!strcmp (text, "sendVstEvents") ||
+			//	!strcmp (text, "sendVstMidiEvent") ||
+				!strcmp (text, "sendVstTimeInfo") ||
+			//	!strcmp (text, "receiveVstEvents") ||
+			//	!strcmp (text, "receiveVstMidiEvent") ||
+				!strcmp (text, "supplyIdle"))
+				ret = 1;
+			break;
+		}
+
+		//---------------------------
+		case audioMasterGetLanguage:				// see enum
+			ret = kVstLangEnglish;
+			break;
+
+		//---------------------------
+		case audioMasterSizeWindow:				// index: width, value: height
+			break;
+
+		//---------------------------
+		case audioMasterVendorSpecific:			// no definition, vendor specific handling
+			break;
+
+		//---------------------------
+		case audioMasterOpenWindow:				// returns platform specific ptr
+		case audioMasterCloseWindow:			// close window, platform specific handle in <ptr>
+			break;
+
+		//---------------------------
+  		case audioMasterGetDirectory:			// get plug directory, FSSpec on MAC, else char pointer
+		{
+			VSTFilterPlugin * plugin = VSTFilterPlugin::Identify (eff);
+			if (plugin)
+				//QUI--QUI ret = (long) plugin->fFactory->fFolderPath.String ();
+				printf("Ops.. i don't know where is plug-in directory..\n");
+			break;
+		}
+
+		case audioMasterUpdateDisplay:			// something has changed, update 'multi-fx' display
+			bpm_change=true;
+			break;
+	}
+
+	return ret;
+}
+void VSTFilterPlugin::load_plug_ins (const char *rootdir, BMenu *list,int line)
+{
+	DIR* dir = opendir (rootdir);
+	if (dir)
+	{
+		struct dirent * entry = readdir (dir);
+		while (entry)
+		{
+			if (strcmp (entry->d_name, ".") != 0 && strcmp (entry->d_name, "..") != 0)
+			{
+				char path[PATH_MAX];
+				strcpy (path, rootdir);
+				strcat (path, "/");
+				strcat (path, entry->d_name);
+
+				struct stat st;
+				if (stat (path, &st) == 0)
+				{
+					if (S_ISREG (st.st_mode))
+					{
+						BNode	node (path);
+						char	type[B_MIME_TYPE_LENGTH];
+						if (node.InitCheck () == B_OK
+							&& node.ReadAttr ("BEOS:TYPE", B_MIME_STRING_TYPE, 0, type, B_MIME_TYPE_LENGTH) > 0
+							&& strcmp (type, B_APP_MIME_TYPE) == 0) {
+							// To help debugging if a crash occurs...
+							//printf ("Loading \"%s\" as an addon... ", path);
+							fflush (stdout);
+							char	name[B_OS_NAME_LENGTH];
+							strncpy (name, entry->d_name, B_OS_NAME_LENGTH);
+							rename_thread (find_thread (NULL), name);
+							// an executable has been found. Try to load it as a VST plugin
+							image_id vstaddon = load_add_on (path);
+							if (vstaddon > 0)
+							{	// the file is indeed an addon, but is it a VST plugin?
+								//printf ("OK! VST Plugin?... ");
+								fflush (stdout);
+								AEffect * effect;
+								AEffect * (*main_plugin) (audioMasterCallback audioMaster);
+								if (get_image_symbol (vstaddon, "main_plugin", B_SYMBOL_TYPE_TEXT, (void**) &main_plugin) == B_OK)
+								{	// Chances are now that this is a VST plugin, but is it supported?...
+									//printf ("Yes!\n");
+									effect = (*main_plugin) (&audioMaster);
+									if (effect && effect->magic == kEffectMagic)
+									{
+										if (
+											#if VST_INSTRUMENTS
+											(((effect->flags & effFlagsIsSynth) && effect->numOutputs <= VST_INSTRUMENTS_MAX_OUTPUT) || // for VST Instruments
+												(effect->numOutputs <= 2))	// "normal" plugins
+											#else
+											// VST Instrument not allowed
+											(effect->flags & effFlagsIsSynth) == 0
+											&& effect->numOutputs <= 2
+											#endif
+											//&& effect->dispatcher (effect, effGetVstVersion, 0, 0, 0, 0) >= 1
+											&& effect->numInputs <= 2)
+										{
+											effect->dispatcher (effect, effOpen, 0, 0, 0, 0.);
+											// the VST plugin has been opened. Now we can create the "PluginFactory" object.
+											info=new BMessage('VST');
+											info->AddInt16("vst_line",line);
+											info->AddString("vst_name",entry->d_name);
+											list->AddItem (new BMenuItem(entry->d_name,info));
+											//printf("Vst : %s\n",entry->d_name);
+											//unload_add_on (vstaddon);
+										}
+										effect->dispatcher (effect, effClose, 0, 0, 0, 0.);
+									}
+								}// else
+									//printf ("No!\n");
+								unload_add_on (vstaddon);
+							} //else
+								//printf ("Not an addon!\n");
+						}
+					}
+					else if (S_ISDIR (st.st_mode))
+						load_plug_ins (path, list,line);
+				}
+			}
+			entry = readdir (dir);
+		}
+		closedir (dir);
+	}
+	
+	// Add
+
+}

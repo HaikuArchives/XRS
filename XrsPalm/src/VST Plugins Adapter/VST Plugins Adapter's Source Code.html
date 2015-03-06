@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+  <head>
+    <meta name="Author" content="Georges-Edouard Berenger">
+    <title>VST Plugins Adapter's Notice</title>
+  </head>
+
+  <body bgcolor="#FFFFFF">
+    <font FACE="Humnst777 BT, Arial, Helvetica">
+    <h1><font color="#1822CD"><font size="+4">VST Plugins Adapter's Notice</font></font></h1>
+    &copy;2000, <a href="mailto:berenger@francenet.fr">Georges-Edouard Berenger</a>, berenger@francenet.fr <br>
+     Hamburg, January 22nd 2001. 
+
+    <h3><font color="#1822CD">What is VST Plugins Adapter?</font></h3>
+     VST Plugins Adapter is a SoundPlay plugin that will bring VST Plugins support to that application.
+     <br>In other words, it will allow SoundPlay to use the BeOS version of VST Plugins.
+     <br>If you haven't done so already, you should get the latest version of
+     <a href="http://www.xs4all.nl/~marcone/soundplay.html">SoundPlay</a>.
+     <p>You will also need the <a href="http://www.xs4all.nl/~marcone/be.html">SoundPlay Plugin SDK</a> available at the same location.
+     Be sure to install the development kit inside SoundPlay's folder.
+	<p>You will also need information about the VST Plugins architecture. For that, get
+	<a href="http://service.steinberg.net/webdoc.nsf/show/developer_e">the VST Plugins Developer Kit</a>.
+
+    <h3><font color="#1822CD">What is this package?</font></h3>
+     This package is aimed at developers who want to know more about VST Plugins, and how to support them in their own applications.
+     This package contains the source code for that SoundPlay plugin, and its BeIDE project.
+     <br>
+
+    <h3><font color="#1822CD">What is a plugin? "SoundPlay plugin?" "VST Plugin?"</font></h3>
+    A plugin is a program designed to add functionality to a program which provides support for such an extension.
+    Both the program &amp; the plugin have to be designed for one another.
+    SoundPlay supports its own specific kind of plugins, but not VST Plugins.
+    The VST Plugins Adapter is a plugin designed for SoundPlay. For SoundPlay, it is just a "normal" plugin, which
+    defines a number of audio effects.
+    <br>The VST Plugins Adapter itself knows very little about audio. It barely knows how SoundPlay expects its plugins
+    to process audio, and how VST Plugins process audio data. It will use those VST Plugins to process audio, adapting what needs to 
+    be adapted.
+    <p>For the user, everything happens just as if SoundPlay itself knew how to use VST Plugins.
+    <br>
+
+	<h3><font color="#1822CD">Where can I find VST Plugins for BeOS?</font></h3>
+	For example, <a href="http://members.tripod.de/cell/vst_addon/plugins.html">Here!</a>
+	
+
+ 	<h3><font color="#1822CD">How to install VST Plugins's Adapter itself? How does it work?</font></h3>
+ 	For Indications on how to use the VST Plugin Adapter as a user, read its documentation.
+ 	It is called "VST Plugins Adapter's Notice.html" and comes with the latest version of SoundPlay.
+
+ 	<h3><font color="#1822CD">How to install VST Plugins's Adapter Source Code?</font></h3>
+ 	You have unpacked the zip archive already, since you are reading this document!
+ 	You now simply need to place the "VST Plugins Adapter" folder inside the Plugin-dev folder which should be be inside SoundPlay's
+ 	folder. That is, you should have the following (among other files):
+ 	<center>
+ 	<table border=1 cellpadding=5 cellspacing=0>
+ 	<tr><td>"SoundPlay's Folder"/</td><td>SoundPlay's folder</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/SoundPlay</td><td>SoundPlay itself</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Documentation/</td><td>The documentation folder</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Documentation/VST Adapter's Notice.html</td><td>The user documentation for the VST Plugins Adapter Plugin</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/lib/</td><td>More SoundPlay folders...</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Plugins/</td><td>The folder containing SoundPlay's plugins binaries</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Plugins/VST Plugins Adapter</td><td>The VST Plugins Adapter binary</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Plugin-dev/</td><td>The SoundPlay plugins development folder</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Plugin-dev/VST Plugins Adapter/</td><td>The folder containing all VST Plugins Adapter files.</td></tr>
+ 	<tr><td>"SoundPlay's Folder"/Plugin-dev/VST Plugins Adapter/VST Plugins Adapter.proj</td><td>The VST Plugins Adapter project.</td></tr>
+ 	</table></center>
+ 	
+ 	<p>The easiest is to open the VST Plugins Adapter folder, and look at the source files. The source is documented were relevant.
+ 	<br>The biggest difficulty you will have to face is to understand what is done for the SoundPlay plugins interface, and what is done for the
+ 	VST Plugins interface...
+
+
+    <h3><font color="#1822CD">Special Thanks!</font></h3>
+    A number of special thanks must be given:
+    <ul>
+    <li><a href="http://www.lebuzz.com/">Le Buzz's</a> editor <a href="mailto:dsuden@netnet.net">Dane Scott</a> for having the idea
+    in the first place and requesting it on his web site last summer!</li>
+    
+    <li><a href="http://www.steinberg.net">Steinberg Media AG</a> for allowing me to start the project during my last days in the company.</li>
+    
+    <li>Steinberg's <a href="mailto:y.grabit@steinberg.de">Yvan Grabit</a> for his answers regarding VST Plugins & VST GUI.</li>
+
+    <li><a href="mailto:marcone@xs4all.nl">Marco Nelissen</a>, SoundPlay's author, who made many improvements to SoundPlay's plugins architecture so that this plugin is now very
+    clean &amp; simple. He added float buffers support as well as a new C++ interface for SoundPlay plugins. He also
+    contributed many times with code, testing &amp; suggestions.</li>
+	</ul>
+
+    <h3><font color="#1822CD">License</font></h3>
+    This software is a freeware.
+    
+    <p>This software is not endorsed by Steinberg Media AG, and therefore, questions, requests, bug reports should only be
+    sent to the author.
+
+    <p><b><font color="#ED181E">The author makes no warranties, express or implied, including
+    without limitation the implied warranties of merchandability and fitness for any particular
+    purpose, regarding this software. The author does not warrant, guarantee or make any
+    representations regarding the use or the results of the use of the software in terms of its
+    correctness, accuracy, reliability, currentness or otherwise. The entire risk as to the results
+    and performance of the software is assumed by you.</font></b></p>
+
+    <p>I'll be glad to hear about your bug reports, problems, comments, flames...<br>
+     You can mail me directly : <a href="mailto:berenger@francenet.fr">Georges-Edouard Berenger</a>.</p>
+     Before you get to me though, please be as sure as possible that the problem lies in VST Plugins Adapter itself, and
+     not in a specific VST Plugin or SoundPlay itself... In those later case, please get in touch with their respective authors.
+     
+    <p>For questions/problems regarding the implementation of VST Plugins and/or VST Plugins hosts, you should subscribe to Steinberg's
+    mailing list for VST Plugins Developers.
+
+    <h3><font color="#1822CD">Known bugs &amp; problems</font></h3>
+
+    <ul>
+     <li>At this time, VST Instruments are not (fully) supported, though there is a premiliminary support in the code.
+      The current implementation triggers problems in the Midi kit.
+     </li>
+     
+    </ul>
+
+    <h3><font color="#1822CD">History</font></h3>
+
+    <h4>v1.0 (January 22nd)</h4>
+
+    <ul>
+      <li>First public release.</li>
+    </ul>
+  </font>
+  </body>
+</html>
+
