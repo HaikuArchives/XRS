@@ -11,6 +11,8 @@ class	Track;
 class	BPopUpMenu;
 class	BPot;
 
+#include <PictureButton.h>
+
 #define	XRS_SIMPLE_DATA	'xrsd'
 
 //enum{
@@ -40,10 +42,10 @@ class JTrack:public BView
 		virtual int	getModel();
 		void		Mute(bool,bool);
 		//virtual 	BPopUpMenu*	getMenu();
-		
+
 		virtual void	SetName(const char*);
 		virtual void	MessageReceived(BMessage*);
-	
+
 			Track*	getTrack() {return myTrack;};
 	protected:
 			BView*			tv;
@@ -56,20 +58,20 @@ class JTrack:public BView
 			XNotesView*		vnc;
 			XTrack*		xtr;
 			int16	id;
-			
+
 			BPictureButton	*trackmenu;
 			uint32			flags;
-			
+
 				void	ShowMenu();
 	private:
-	
-		
-			const char*			name_pad;					
-			BPictureButton	*button_mode;			
+
+
+			const char*			name_pad;
+			BPictureButton	*button_mode;
 			BPictureButton 	*button_piano;
 			BPopUpMenu	*popup;
-				
-			
+
+
 };
 
 #endif

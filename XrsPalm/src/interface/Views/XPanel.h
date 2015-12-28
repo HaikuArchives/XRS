@@ -12,6 +12,8 @@ class BankManager;
 class PatControl;
 class Pattern;
 class TracksPanel;
+class BPictureButton;
+class BSlider;
 
 class XPanel : public BView
 {
@@ -28,32 +30,32 @@ class XPanel : public BView
 				Pattern*	currentPattern();
 		virtual void			MouseDown(BPoint);
 			void			ResetMeasureCount();
-	
+
 	private:
-	
+
 		void	SelectTrack(int);
-	
-	
+
+
 		PatControl 		*curpat;
-	
+
 		BPictureButton 	*play_bt;
 		BPictureButton 	*all_bt;
 		BPictureButton		*edit;
 		BPictureButton		*vst;
-		
-			
+
+
 		BSlider			*tempo;
 		BSlider			*sl_cut;
 		BSlider			*sl_reso;
 		BPictureButton		*filter_on;
 		PatControl		*tempo_text;
-		
+
 		Song			*curSong;
 		int			curPattern;
-		
+
 		char			ttext[4];
 		bool 			key_rel;
-		
+
 		TracksPanel	*tp;
 };
 #endif

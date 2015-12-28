@@ -100,7 +100,7 @@ long r_rndftoa( r_float f, STRPTR dest, unsigned char pts )
  * 2)	±000 000 123.456 7xx xxx		`±1e+02'
  * 3)	±001 234 567.xxx xxx xxx		`±1e+06'
  * 4)	±123 456 7xx.xxx xxx xxx		`±1e+08'
- *		
+ *
  *		erikoistapaukset:
  * 1)	0								` 0.000000    '
  * 2)	ääretön tai miinus ääretön		`±INFINITY    '

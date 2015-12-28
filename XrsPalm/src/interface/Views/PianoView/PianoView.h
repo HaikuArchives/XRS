@@ -17,6 +17,7 @@
 
 class BView;
 class Pattern;
+class BStringView;
 //#include "cortex_defs.h"
 
 
@@ -24,7 +25,7 @@ class Pattern;
 class PianoView :
 	public	BWindow {
 	typedef	BWindow _inherited;
-	
+
 public:												// dtor/ctors
 	//virtual ~PianoView();
 
@@ -37,20 +38,20 @@ public:												// dtor/ctors
 public:												// BWindow
 	virtual void WindowActivated(bool 	activated);
 	virtual bool QuitRequested();
-	
-		 void	Reset(Pattern* p,bool extra);	
+
+		 void	Reset(Pattern* p,bool extra);
 public:												// BHandler
 	virtual void MessageReceived(BMessage*	message);
-		
+
 private:
 	BView*				m_control;
 	BView*				extra_control;
 	BStringView*				m_text;
-	BMessenger				m_target;	
+	BMessenger				m_target;
 	//const BMessage*			m_message;
 	BView*				m_keypass;
 	BScrollBar*				sb;
-	
+
 	bool					m_sentUpdate;
 };
 

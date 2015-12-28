@@ -2,6 +2,7 @@
 #define _Xed_Utils
 
 #include <InterfaceKit.h>
+#include <Path.h>
 
 BPicture*	MakePicture(BBitmap*,BView*);
 void		GetSkinDirectoryPath(BPath* thePath);

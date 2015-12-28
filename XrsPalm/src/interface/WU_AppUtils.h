@@ -24,6 +24,7 @@
 
 #include <AppKit.h>
 #include <StorageKit.h>
+#include <InterfaceKit.h>
 
 // -------------------------------------------------------------------
 void
@@ -41,13 +42,13 @@ GetAppDirectoryPath(BPath* thePath);
 void
 GetAppPath(BPath* thePath);
 // -------------------------------------------------------------------
-// Creates and returns a pointer to a bitmap reconstructed from a 
+// Creates and returns a pointer to a bitmap reconstructed from a
 // resource in the app's file. Returns NULL if it can't be found.
 // The caller is responsible for deleting the bitmap.
 BBitmap*
 GetAppBitmap(uint32 resID);
 // -------------------------------------------------------------------
-// Creates and returns a pointer to a BPicture reconstructed from a 
+// Creates and returns a pointer to a BPicture reconstructed from a
 // resource in the app's file. Returns NULL if it can't be found.
 // The caller is responsible for deleting the BPicture.
 BPicture*
