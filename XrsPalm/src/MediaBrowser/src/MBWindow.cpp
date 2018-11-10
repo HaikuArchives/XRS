@@ -54,7 +54,7 @@ void
 MBWindow::AddFolder(entry_ref ref)
 {
 	BListItem* samples;
-	list->AddItem(samples = new MListItem(&ref,ref.name,true));
+	list->AddItem(samples = new MListItem(&ref,ref.name,true,-1,1));
 	samples->SetExpanded(true);
 	ParseDir(&ref,samples);
 }
@@ -78,12 +78,12 @@ MBWindow::ParseDir(entry_ref *ref,BListItem* folder)
 				e.GetRef(&rif);
 				if(CheckIsBank(&rif)!=B_OK)
 				{
-					list->AddUnder(new MListItem(&rif,rif.name),folder);
+					list->AddUnder(new MListItem(&rif,rif.name,true,-1,1),folder);
 					//j++;
 				}
 				else
 				{
-					list->AddUnder(samples = new MListItem(&rif,rif.name,true),folder);
+					list->AddUnder(samples = new MListItem(&rif,rif.name,true,-1,1),folder);
 					samples->SetExpanded(false);
 					ParseBank(&rif,samples);
 				}
@@ -94,7 +94,7 @@ MBWindow::ParseDir(entry_ref *ref,BListItem* folder)
 		if(e.IsDirectory())
 			{
 				e.GetRef(&rif);
-				list->AddUnder(samples = new MListItem(&rif,rif.name,true),folder);
+				list->AddUnder(samples = new MListItem(&rif,rif.name,true,-1,1),folder);
 				samples->SetExpanded(false);
 				ParseDir(&rif,samples);
 			}

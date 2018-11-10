@@ -39,7 +39,7 @@ BroadcastToClients(const char* mimeAppStr, BMessage* theMesg)
 	team_id theTeam;
 	int32 numApps = appList->CountItems();
 	while(numApps > 0) {
-		theTeam = (team_id)appList->ItemAt(numApps - 1);
+		theTeam = (team_id)(*(int*)appList->ItemAt(numApps - 1));
 		status_t result = be_roster->GetRunningAppInfo(theTeam,&theInfo);
 		if(result == B_OK) {
 			// Compare signature and send message if match

@@ -85,26 +85,26 @@ Juice::Juice(MatrixWindow *matrix) :
 	optr[0]=(float*)&outputsl;
 	optr[1]=(float*)&outputsr;
 
-	stream_normal_left=new float[ FRAMES_NUM];
-	stream_normal_right=new float[ FRAMES_NUM];
+	stream_normal_left=new float[FRAMES_NUM];
+	stream_normal_right=new float[FRAMES_NUM];
 
 	stream_normal[0]=stream_normal_left;
 	stream_normal[1]=stream_normal_right;
 
-	stream_fx1_left=new float[ FRAMES_NUM];
-	stream_fx1_right=new float[ FRAMES_NUM];
+	stream_fx1_left=new float[FRAMES_NUM];
+	stream_fx1_right=new float[FRAMES_NUM];
 
 	stream_fx1[0]=stream_fx1_left;
 	stream_fx1[1]=stream_fx1_right;
 
-	stream_fx2_left=new float[ FRAMES_NUM];
-	stream_fx2_right=new float[ FRAMES_NUM];
+	stream_fx2_left=new float[FRAMES_NUM];
+	stream_fx2_right=new float[FRAMES_NUM];
 
 	stream_fx2[0]=stream_fx2_left;
 	stream_fx2[1]=stream_fx2_right;
 
-	stream_service_left=new float[ FRAMES_NUM];
-	stream_service_right=new float[ FRAMES_NUM];
+	stream_service_left=new float[FRAMES_NUM];
+	stream_service_right=new float[FRAMES_NUM];
 
 	stream_service[0]=stream_service_left;
 	stream_service[1]=stream_service_right;

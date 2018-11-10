@@ -8,6 +8,7 @@ class BRadioButton;
 class Song;
 class BTextView;
 class BCheckBox;
+class BFilePanel;
 
 class ExportPanel: public BWindow
 {

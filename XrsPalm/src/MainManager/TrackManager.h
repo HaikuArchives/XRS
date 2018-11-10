@@ -28,7 +28,7 @@ public:
 	JTrack*	getJTrack();
 	void		Save(Track*,int,BFile*,int);
 	bool		Load(Track*,int,BFile*,int32,int32);
-	Track*		SendRef(entry_ref,int,BMessage *m=NULL);	
+	Track*		SendRef(entry_ref,int,BMessage *m);	
 	bool		isBoosterValid(int);
 	status_t	SelectTrack(JTrack* t);
 	JTrack*	getCurrentJTrack(){ return curJTrack; };

@@ -6,7 +6,7 @@
 class PatControl : public BView
 {
 	public:
-		PatControl(BRect,BPicture*,BPicture*,BPicture*,BPicture*,BPicture*,int ,int ,int,int32,BBitmap *base=NULL);
+		PatControl(BRect,BPicture*,BPicture*,BPicture*,BPicture*,BPicture*,int ,int ,int,int32,BBitmap *base);
 	
 	virtual void 		AttachedToWindow();	
 	virtual void 		MessageReceived(BMessage*);
