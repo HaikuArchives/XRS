@@ -7,7 +7,7 @@
 
 
 
-PatControl::PatControl(BRect rect,BPicture*picUp,BPicture* picUpSel,BPicture* picDown,BPicture* picDownSel,BPicture* dis,int m,int ma,int cur,int32 mx,BBitmap *base=NULL ): BView(rect,"W",B_FOLLOW_NONE,B_WILL_DRAW)
+PatControl::PatControl(BRect rect,BPicture*picUp,BPicture* picUpSel,BPicture* picDown,BPicture* picDownSel,BPicture* dis,int m,int ma,int cur,int32 mx,BBitmap *base): BView(rect,"W",B_FOLLOW_NONE,B_WILL_DRAW)
 {
 	
 		

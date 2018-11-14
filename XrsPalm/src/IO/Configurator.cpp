@@ -12,15 +12,15 @@ cf_Init(const char *filename)
 	// e ne prepara uno nuovo dove tutti possino scrivere i prori cazzi.
 
 
-	find_directory(B_SYSTEM_SETTINGS_DIRECTORY, &cf_path, true);
-	cf_path.Append(filename);
+	find_directory (B_SYSTEM_SETTINGS_DIRECTORY, &cf_path, true);
+	cf_path.Append (filename);
 
 	status_t err;
 
 	cf_in_msg=new BMessage();
 	cf_out_msg=new BMessage();
 
-	cf_file =new BFile(cf_path.Path(), B_READ_WRITE | B_CREATE_FILE);
+	cf_file =new BFile (cf_path.Path (), B_READ_WRITE | B_CREATE_FILE);
 	if (cf_file->InitCheck () == B_OK)
 	{
 

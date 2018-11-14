@@ -27,7 +27,7 @@ class MainWindow:public BWindow
 				void	Close();
 			
 		virtual	void	MessageReceived(BMessage* message);
-				void	Reset(Song*,bool juicereset);
+				void	Reset(Song*,bool juicereset=true);
 				void	Init(JFileManager*,TrackManager*);
 		virtual bool		QuitRequested();
 		virtual void WindowActivated(bool active);

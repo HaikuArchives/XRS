@@ -70,7 +70,7 @@ SRCS = IO/Configurator.cpp \
 	interface/Views/XPanel.cpp \
 	interface/Views/XSlider.cpp \
 	interface/Views/pot.cpp \
-	interface/WU_AppUtils.cp \
+	interface/WU_AppUtils.cpp \
 	interface/meter/Meter.cpp \
 	interface/meter/StereoMeter.cpp \
 	interface/playlist/DropView.cpp \

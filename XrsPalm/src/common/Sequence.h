@@ -21,7 +21,7 @@ class Sequence
 		
 		int	ItemAt(int);
 		int	Reset();
-			void	setItemAt(int,int,bool f);
+			void	setItemAt(int,int,bool f=false);
 		
 			int	getMaxSeq();
 			int	getMaxPat();

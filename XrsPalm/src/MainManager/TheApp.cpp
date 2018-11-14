@@ -77,7 +77,7 @@ TheApp::TheApp(const char * signature) :
 		}
 	
 	ab->setText("..ready..");
-	 S->Reset(currentSong, true);
+	 S->Reset(currentSong);
 	look=S->PreferredHandler() ;//getHandler();
 	S->Show();
 	
@@ -99,7 +99,7 @@ TheApp::EmptySong()
 	 jfm->CloseSong(currentSong,true);
 	currentSong=jfm->EmptySong();
 	//currentSong->setDefaultBKM();
-	S->Reset(currentSong, true);
+	S->Reset(currentSong);
 	}
 }
 void
@@ -131,7 +131,7 @@ TheApp::DefaultSong()
 		
 	if(currentSong==NULL)	  currentSong=jfm->EmptySong();
 	
-	 S->Reset(currentSong, true);
+	 S->Reset(currentSong);
 	
 	}
 }
@@ -391,7 +391,7 @@ TheApp::RefsReceived(BMessage *message)
 			{
 				if(currentSong->getSizeDescription()>0 && currentSong->popupdesc==true)
 				(new BAlert("XRS ",currentSong->getDescription(), "Ok",NULL,NULL,B_WIDTH_AS_USUAL,B_EMPTY_ALERT))->Go(NULL);
-				S->Reset(currentSong, true);
+				S->Reset(currentSong);
 			}
 			
 		}

@@ -32,7 +32,7 @@ class	BPot;
 class JTrack:public BView
 {
 	public:
-				JTrack(BRect,int16,BView*,uint32 type,const char*n);
+				JTrack(BRect,int16,BView*,uint32 type=7,const char*n="TrackNameOff");
 		virtual void	Init(BView *t,BMessage *m);
 		virtual void	RControl();
 		virtual void	Reset(Pattern*,Track*);

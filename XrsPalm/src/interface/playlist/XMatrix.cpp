@@ -203,11 +203,11 @@ XMatrix::MouseDown(BPoint p)
 	{
 		if(sequence->ItemAt(ax1)!=ay1)
 		
-				sequence->setItemAt(ax1,ay1,true);
+				sequence->setItemAt(ax1,ay1);
 				
 				else
 				{
-						sequence->setItemAt(ax1,-1, true);
+						sequence->setItemAt(ax1,-1);
 				}
 		
 		

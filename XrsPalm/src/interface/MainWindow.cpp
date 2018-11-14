@@ -313,7 +313,7 @@ MainWindow::RefreshPopUp(int h)
 		tp->SingleBank(h);
 }*/
 void
-MainWindow::Reset(Song* s,bool juicereset=true)
+MainWindow::Reset(Song* s,bool juicereset)
 {
 
 

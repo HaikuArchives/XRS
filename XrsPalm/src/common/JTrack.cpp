@@ -25,7 +25,7 @@
 const 	rgb_color  	onc 	={255,52,49};//{81,110,117,255};
 //const 	rgb_color  	offc 	={57,186,255};//{107,146,156,255}; 
 
-JTrack::JTrack(BRect rect,int16 n,BView* v,uint32 type=7,const char*na="TrackNameOff"):BView(rect,"_jtrack",B_FOLLOW_LEFT ,B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE_JUMP),
+JTrack::JTrack(BRect rect,int16 n,BView* v,uint32 type,const char*na):BView(rect,"_jtrack",B_FOLLOW_LEFT ,B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE_JUMP),
 id(n),flags(type),name_pad(na)
 {
 	SetViewColor(bkColor);

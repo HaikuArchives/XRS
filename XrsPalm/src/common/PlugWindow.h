@@ -15,11 +15,11 @@ class PlugWindow:public BWindow
 
 
 	 public:
-					PlugWindow(const char*name);
+					PlugWindow(const char*name=NULL);
 			virtual bool 	QuitRequested();
 			void		SetControls(BView*,bool);
 			void		SetPrograms(const char *name,BMenu*);
-			void		SetState(bool,float force);
+			void		SetState(bool,float force=-1);
 			bool		GetState() { return big;}
 			
 			void		SavePref(BMessage*);
