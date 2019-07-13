@@ -70,7 +70,7 @@ SRCS = IO/Configurator.cpp \
 	interface/Views/XPanel.cpp \
 	interface/Views/XSlider.cpp \
 	interface/Views/pot.cpp \
-	interface/WU_AppUtils.cp \
+	interface/WU_AppUtils.cpp \
 	interface/meter/Meter.cpp \
 	interface/meter/StereoMeter.cpp \
 	interface/playlist/DropView.cpp \
@@ -103,7 +103,7 @@ RSRCS =
 #	- 	if your library does not follow the standard library naming scheme,
 #		you need to specify the path to the library and it's name.
 #		(e.g. for mylib.a, specify "mylib.a" or "path/mylib.a")
-LIBS = be tracker media game translation
+LIBS = $(STDCPPLIBS) be tracker media game translation
 
 #	Specify additional paths to directories following the standard libXXX.so
 #	or libXXX.a naming scheme. You can specify full paths or paths relative

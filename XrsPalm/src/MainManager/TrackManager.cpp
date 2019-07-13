@@ -127,7 +127,7 @@ TrackManager::Load(Track* cur,int t,BFile* file,int32 va,int32 rt)
 }
 
 Track*
-TrackManager::SendRef(entry_ref ref, int id,BMessage *m=NULL)
+TrackManager::SendRef(entry_ref ref, int id,BMessage *m)
 {
 	if(list[id]==NULL) 	return NULL;
 	

@@ -1,5 +1,6 @@
 #include "Filter2p.h"
 
+#include <math.h>
 Filter2p::Filter2p()
 {
 	Init();

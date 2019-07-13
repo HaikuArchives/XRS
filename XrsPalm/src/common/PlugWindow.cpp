@@ -8,7 +8,7 @@
 #include "stdio.h"
 #define	X_WIN_ZOOM		'xwzo'
 
-PlugWindow::PlugWindow(const char*name=NULL) :
+PlugWindow::PlugWindow(const char*name) :
 	BWindow(BRect(250,30,280,60),name, B_FLOATING_WINDOW, B_ASYNCHRONOUS_CONTROLS|B_NOT_ZOOMABLE),
 	big(true)
 {}
@@ -59,7 +59,7 @@ PlugWindow::SetPrograms(const char *name,BMenu* prog)
 	Unlock();
 }
 void
-PlugWindow::SetState(bool s,float force=-1)
+PlugWindow::SetState(bool s,float force)
 {
 	if(!s)	{
 				smallH=bar->Frame().Height();

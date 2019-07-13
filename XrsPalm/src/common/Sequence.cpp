@@ -57,7 +57,7 @@ Sequence::ItemAt(int d)
 
 
 void
-Sequence::setItemAt(int d,int val,bool c=false)
+Sequence::setItemAt(int d,int val,bool c)
 {
 	//if(d<MAX_SEQUENCE)
 //		matrix[d]=val;
